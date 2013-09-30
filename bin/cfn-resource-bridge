@@ -1,0 +1,107 @@
+#!/usr/bin/env python
+
+#==============================================================================
+# Copyright 2013 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#==============================================================================
+from aws.cfn import bridge
+from aws.cfn.bridge.runner import CfnBridge
+from aws.cfn.bridge.config import load_resources_from_configuration
+
+from argparse import ArgumentParser
+import logging
+import os
+import threading
+import datetime
+import sys
+
+if os.name == 'nt':
+    default_confdir = os.path.expandvars('${SystemDrive}\cfn')
+else:
+    default_confdir = '/etc/cfn'
+
+parser = ArgumentParser(prog='cfn-resource-bridge')
+
+parser.add_argument("-c", "--config", help="The configuration directory (default: %s)" % default_confdir,
+                    dest="config_path", default=default_confdir)
+parser.add_argument("--no-daemon", help="Do not daemonize", dest="no_daemon", action="store_true")
+parser.add_argument("-v", "--verbose", help="Enables verbose logging", action="store_true", dest="verbose")
+parser.add_argument("-t", "--threads", help="Configure the number of threads to use", type=int, dest="threads")
+
+options = parser.parse_args()
+
+
+def main():
+    # Configure our logger
+    bridge.configure_logging("DEBUG" if options.verbose else "INFO", filename='cfn-resource-bridge.log')
+
+    # Require there to be a configuration path, default should handle when not specified.
+    if not options.config_path:
+        print >> sys.stderr, u"Error: A configuration path must be specified"
+        parser.print_help(sys.stderr)
+        sys.exit(1)
+
+    # Ensure that the configuration path really exists, since we expect the config file to be there.
+    if not os.path.isdir(options.config_path):
+        print >> sys.stderr, u"Error: Could not find configuration at %s" % options.config_path
+        sys.exit(1)
+
+    try:
+        resources = load_resources_from_configuration(options.config_path)
+    except Exception, ex:
+        logging.exception("Failed to load configuration")
+        print >> sys.stderr, u"Error: Failed to load configuration: %s" % str(ex)
+        sys.exit(1)
+
+    # Construct our bridge
+    runner = CfnBridge(resources, num_threads=options.threads)
+
+    # Start processing messages
+    runner.process_messages()
+
+    wait_event = threading.Event()
+
+    # Wait until process is killed
+    while True:
+        try:
+            # do this instead of wait() without timeout
+            # as for some reason interrupts will not happen unless you wait for a specified time
+            # (even if the wait is for a long time, the interrupt comes immediately)
+            wait_event.wait(60)
+        except KeyboardInterrupt:
+            sys.exit(0)
+
+if options.no_daemon:
+    main()
+elif os.name == 'nt':
+    print >> sys.stderr, u"Error: cfn-resource-bridge cannot be run directly in daemon mode on Windows"
+    sys.exit(1)
+else:
+    try:
+        import daemon
+    except ImportError:
+        print >> sys.stderr, u"Daemon library was not installed; please install python-daemon"
+        sys.exit(1)
+
+    try:
+        from daemon import pidlockfile
+    except ImportError:
+        from daemon import pidfile as pidlockfile
+
+    with daemon.DaemonContext(pidfile=pidlockfile.TimeoutPIDLockFile('/var/run/cfn-resource-bridge.pid', 300)):
+        try:
+            main()
+        except Exception, e:
+            logging.exception("Unhandled exception")
+            sys.exit(1)

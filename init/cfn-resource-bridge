@@ -1,0 +1,60 @@
+#!/bin/bash
+#
+# cfn-resource-bridge    CloudFormation Custom Resource Bridge daemon
+#
+# chkconfig:    - 80 20
+#
+# description:  Runs user-specified actions when a
+#               CloudFormation event is found
+# processname:  cfn-resource-bridge
+# config: /etc/cfn/cfn-resource-bridge.conf
+# pidfile: /var/run/cfn-resource-bridge.pid
+#
+# source function library
+. /etc/rc.d/init.d/functions
+
+RETVAL=0
+
+start() {
+        echo -n $"Starting cfn-resource-bridge: "
+        daemon /opt/aws/bin/cfn-resource-bridge
+        RETVAL=$?
+        echo
+        [ $RETVAL -eq 0 ] && touch /var/lock/subsys/cfn-resource-bridge
+}
+
+stop() {
+        echo -n $"Stopping cfn-resource-bridge: "
+        killproc -p /var/run/cfn-resource-bridge.pid cfn-resource-bridge
+        echo
+        [ $RETVAL -eq 0 ] && rm -f /var/lock/subsys/cfn-resource-bridge
+}
+
+restart() {
+        stop
+        start
+}
+
+case "$1" in
+  start)
+        start
+        ;;
+  stop)
+        stop
+        ;;
+  restart|force-reload|reload)
+        restart
+        ;;
+  condrestart|try-restart)
+        [ -f /var/lock/subsys/cfn-resource-bridge ] && restart
+        ;;
+  status)
+        status -p /var/run/cfn-resource-bridge.pid cfn-resource-bridge
+        RETVAL=$?
+        ;;
+  *)
+        echo $"Usage: $0 {start|stop|status|restart|reload|force-reload|condrestart}"
+        exit 1
+esac
+
+exit $RETVAL
