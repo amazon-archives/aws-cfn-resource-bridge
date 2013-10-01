@@ -25,6 +25,7 @@ except ImportError:
 
 import logging
 import requests
+import uuid
 
 log = logging.getLogger("cfn.resourcebridge")
 
@@ -283,7 +284,15 @@ class ResourceEvent():
             "LogicalResourceId": self._event["LogicalResourceId"]
         }
 
+        source_attributes['PhysicalResourceId'] = self._event.get('PhysicalResourceId')
+        if not source_attributes['PhysicalResourceId']:
+            source_attributes['PhysicalResourceId'] = uuid.uuid4()
+
+        if not success:
+            source_attributes["Reason"] = "Unknown Failure"
+
         source_attributes.update(attributes)
+        log.debug(u"Sending result: %s", source_attributes)
         self._put_response(source_attributes)
 
     @util.retry_on_failure(max_tries=10)

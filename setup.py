@@ -14,7 +14,7 @@ rpm_requires = ['python>=2.6', 'python-daemon', 'python-botocore>=0.17.0,<0.18.0
 dependencies = ['python-daemon>=1.5.2', 'botocore>=0.17.0,<0.18.0']
 
 if sys.version_info[:2] == (2, 6):
-    # For python2.6 we have to require argparse and simplejson
+    # For python2.6 we have to require argparse
     rpm_requires.append('python-argparse>=1.1')
     dependencies.append('argparse>=1.1')
 
@@ -39,7 +39,7 @@ try:
         'compressed': True,
         'com_server': [],
         'ctypes_com_server': [],
-        'service': ["cfnbootstrap.winhup"],
+        'service': ["cfnresourcebridge.winbridge"],
         'isapi': [],
         'windows': [],
         'zipfile': 'library.zip',
@@ -59,7 +59,7 @@ setup_options = dict(
     license='Apache License 2.0',
     scripts=['bin/cfn-resource-bridge'],
     classifiers=['License :: OSI Approved :: Apache Software License'],
-    packages=['aws'],
+    packages=['aws', 'aws.cfn', 'aws.cfn.bridge'],
     install_requires=dependencies,
     data_files=_data_files,
     options=_opts

@@ -1,0 +1,4 @@
+include LICENSE
+include NOTICE.txt
+include MANIFEST.in
+include init/cfn-resource-bridge

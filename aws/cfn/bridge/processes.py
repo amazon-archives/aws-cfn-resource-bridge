@@ -52,9 +52,13 @@ class ProcessHelper(object):
         if not env:
             self._env = None
         elif os.name == 'nt':  # stringify the environment in Windows, which cannot handle unicodes
-            self._env = dict(((str(k), str(v)) for k, v in env.iteritems()))
+            # Windows requires inheriting some of the parent process' environment, so just take them all.
+            self._env = dict(((str(k), str(v)) for k, v in os.environ.iteritems()))
+            self._env.update(dict(((str(k), str(v)) for k, v in env.iteritems())))
         else:
-            self._env = dict(env)
+            self._env = dict(os.environ.copy())
+            self._env.update(dict(env))
+
         self._cwd = cwd
 
     def call(self):
