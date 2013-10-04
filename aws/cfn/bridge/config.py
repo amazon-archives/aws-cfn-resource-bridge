@@ -51,23 +51,10 @@ def _parse_configurations(config_files):
     the sections in the configurations. It is assumed the files were already checked for existence.
     """
     resources = []
-    resources_by_queue = {}
     # Iterate through the config files and try to parse them
     for bridge_file in config_files:
         # Attempt to parse the configuration
-        parsed_resources = _parse_config(bridge_file)
-
-        # TODO: Should we fail on duplicate queues or simply allow multiple commands (with a warning)?
-        # Ensure the queue url wasn't specified by another resource.
-        for new_res in parsed_resources:
-            # TODO: Should we also ensure "name" is unique (or merge them)?
-            existing_res = resources_by_queue.get(new_res.queue_url)
-            if existing_res:
-                raise ValueError(u"[%s] section in '%s' uses the same queue as [%s] in '%s'." %
-                                (new_res.name, new_res.source_file, existing_res.name, existing_res.source_file))
-            # Unique resource, so add to our list of resources.
-            resources.append(new_res)
-            resources_by_queue[new_res.queue_url] = new_res
+        resources += _parse_config(bridge_file)
 
     return resources
 

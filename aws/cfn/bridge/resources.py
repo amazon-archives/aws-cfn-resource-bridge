@@ -40,6 +40,10 @@ _OPTION_DELETE_TIMEOUT = 'create_timeout'
 _OPTION_UPDATE_TIMEOUT = 'create_timeout'
 _OPTION_TIMEOUT = 'timeout'
 
+_OPTION_FLATTEN = 'flatten'
+_OPTION_SERVICE_TOKEN = 'service_token'
+_OPTION_RESOURCE_TYPE = 'resource_type'
+
 _OPTION_REGION = 'region'
 
 # Our default timeout, set to 30 minutes
@@ -55,7 +59,6 @@ class CustomResource(object):
         # Ensure a queue url has been defined
         self._queue_url = options.get(_OPTION_QUEUE_URL, None)
         if not self._queue_url:
-            # TODO: Should we simply warn and continue on?
             raise ValueError(u"[%s] in '%s' is missing 'queue_url' attribute" % (name, source_file))
 
         self._region = None
@@ -69,6 +72,15 @@ class CustomResource(object):
         if not self._region:
             raise ValueError(u"[%s] in '%s' must define 'region' attribute" % (name, source_file))
 
+        # Determine if we should flatten the resource properties in environment variables. (Default to true)
+        self._flatten = options.get(_OPTION_FLATTEN, 'true').lower() not in ['0', 'no', 'false', 'off']
+
+        # Store the required service token, if it has any
+        self._service_token = options.get(_OPTION_SERVICE_TOKEN, None)
+
+        # Store the resource type supported, if defined
+        self._resource_type = options.get(_OPTION_RESOURCE_TYPE, None)
+
         # Determine the default timeout
         timeout = options.get(_OPTION_TIMEOUT, _DEFAULT_TIMEOUT)
 
@@ -80,7 +92,6 @@ class CustomResource(object):
         # Determine our default action
         action = options.get(_OPTION_DEFAULT_ACTION, None)
 
-        # TODO: Must we define all scripts? Or can we have a default "success" response?
         # Set our actions for each type of event
         self._create_action = options.get(_OPTION_CREATE_ACTION, action)
         if not self._create_action:
@@ -107,6 +118,14 @@ class CustomResource(object):
         return self._source_file
 
     @property
+    def resource_type(self):
+        return self._resource_type
+
+    @property
+    def service_token(self):
+        return self._service_token
+
+    @property
     def region(self):
         return self._region
 
@@ -130,7 +149,7 @@ class CustomResource(object):
             command = self._update_action
 
         # Run our command
-        command_result = ProcessHelper(command, env=event.create_environment()).call()
+        command_result = ProcessHelper(command, env=event.create_environment(self._flatten)).call()
 
         result_text = command_result.stdout.strip()
         success = True
@@ -156,38 +175,6 @@ class CustomResource(object):
             log.debug(u"Command %s output: %s", self._name, result_text)
 
         event.send_result(success, result_attributes)
-
-    def retrieve_events(self, max_events=1):
-        """Attempts to retrieve events for the custom resource"""
-        session = botocore.session.get_session()
-        sqs = session.get_service("sqs")
-        receive = sqs.get_operation("ReceiveMessage")
-        http_response, response_data = receive.call(sqs.get_endpoint(self.region),
-                                                    queue_url=self.queue_url,
-                                                    wait_time_seconds=20,
-                                                    max_number_of_messages=max_events)
-
-        # Swallow up any errors/issues, logging them out
-        if http_response.status_code != 200 or not "Messages" in response_data:
-            log.error(u"[%s] Failed to retrieve messages from queue %s with status_code %s: %s" %
-                      (self.name, self.queue_url, http_response.status_code, response_data))
-            return []
-
-        events = []
-        for msg in response_data.get("Messages", []):
-            # Construct a message that we can parse into events.
-            message = Message(self._queue_url, self._region, msg)
-
-            try:
-                # Try to parse our message as a custom resource event
-                event = ResourceEvent(message)
-
-                events.append(event)
-            except Exception:
-                log.exception(u"Invalid message received; will delete from queue: %s", msg)
-                message.delete()
-
-        return events
 
 
 class Message(object):
@@ -264,8 +251,15 @@ class ResourceEvent():
 
         return env
 
-    def create_environment(self):
-        return ResourceEvent._dict_to_env(self._event, "Event.", {})
+    def create_environment(self, flatten=True):
+        if flatten:
+            return ResourceEvent._dict_to_env(self._event, "Event.", {})
+        else:
+            return {"EventProperties": json.dumps(self._event, skipkeys=True)}
+
+    def get(self, prop):
+        """Attempts to retrieve the provided resource property; returns None if not found"""
+        return self._event.get('ResourceProperties', {}).get(prop)
 
     def increase_timeout(self, timeout):
         """Attempts to increase the message visibility timeout."""
@@ -308,3 +302,6 @@ class ResourceEvent():
             log.info(u"CloudFormation successfully sent response %s", data["Status"])
         except IOError, e:
             log.error(u"Failed sending CloudFormation response: %s", str(e))
+
+    def __repr__(self):
+        return str(self._event)
