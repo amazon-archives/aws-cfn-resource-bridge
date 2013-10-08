@@ -280,7 +280,7 @@ class ResourceEvent():
 
         source_attributes['PhysicalResourceId'] = self._event.get('PhysicalResourceId')
         if not source_attributes['PhysicalResourceId']:
-            source_attributes['PhysicalResourceId'] = uuid.uuid4()
+            source_attributes['PhysicalResourceId'] = str(uuid.uuid4())
 
         if not success:
             source_attributes["Reason"] = "Unknown Failure"
