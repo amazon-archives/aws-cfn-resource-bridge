@@ -14,22 +14,24 @@
 # limitations under the License.
 #==============================================================================
 __author__ = 'aws'
-__version__ = 0.1
+__version__ = '0.1'
 
 import logging.config
 import os.path
 import sys
 import StringIO
 
-
-class NullHandler(logging.Handler):
-    def emit(self, record):
-        pass
+try:
+    from logging import NullHandler
+except ImportError:
+    class NullHandler(logging.Handler):
+        def emit(self, record):
+            pass
 
 _config = """[loggers]
 keys=root,cfnresourcebridge
 [handlers]
-keys=%(all_handlers)s,null
+keys=%(all_handlers)s
 [formatters]
 keys=amzn
 [logger_root]
@@ -55,9 +57,6 @@ class=handlers.RotatingFileHandler
 level=DEBUG
 formatter=amzn
 args=('%(wire_file)s', 'a', 5242880, 5, 'UTF-8')
-[handler_null]
-class=NullHandler
-args=()
 [handler_tostderr]
 class=StreamHandler
 level=%(conf_level)s
@@ -91,7 +90,7 @@ def configure_logging(level='INFO', quiet=False, filename='cfn-resource-bridge.l
     config = {'conf_level': level,
               'all_handlers': 'default' + (',wire' if wire_log else ''),
               'root_handler': 'default',
-              'wire_handler': 'wire' if wire_log else 'null',
+              'wire_handler': 'wire' if wire_log else None,
               'conf_file': output_file}
 
     if wire_file:
@@ -99,12 +98,15 @@ def configure_logging(level='INFO', quiet=False, filename='cfn-resource-bridge.l
 
     try:
         logging.config.fileConfig(StringIO.StringIO(_config), config)
+        if not wire_log:
+            logging.getLogger('wire').addHandler(NullHandler())
     except IOError:
         config['all_handlers'] = 'tostderr'
         config['root_handler'] = 'tostderr'
-        config['wire_handler'] = 'null'
+        config['wire_handler'] = None
         if not quiet:
             print >> sys.stderr, "Could not open %s for logging.  Using stderr instead." % output_file
         logging.config.fileConfig(StringIO.StringIO(_config), config)
+        logging.getLogger('wire').addHandler(NullHandler())
 
 configure_logging(quiet=True, wire_log=True)

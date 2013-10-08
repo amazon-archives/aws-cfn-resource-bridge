@@ -10,7 +10,7 @@ if sys.version_info[0] == 2 and sys.version_info[1] < 6:
         print >> sys.stderr, "Python 2.6+ is required"
         sys.exit(1)
 
-rpm_requires = ['python>=2.6', 'python-daemon', 'python-botocore>=0.17.0,<0.18.0']
+rpm_requires = ['python>=2.6', 'python-daemon', 'python-botocore>=0.17.0']
 dependencies = ['python-daemon>=1.5.2', 'botocore>=0.17.0,<0.18.0']
 
 if sys.version_info[:2] == (2, 6):
@@ -22,7 +22,7 @@ _opts = {
     'build_scripts': {'executable': '/usr/bin/env python'},
     'bdist_rpm': {'requires': rpm_requires}
 }
-_data_files = [('share/doc/%s-%s' % (name, bridge.__version__), ['NOTICE.txt', 'LICENSE.txt']),
+_data_files = [('share/doc/%s-%s' % (name, bridge.__version__), ['NOTICE.txt', 'LICENSE']),
                ('init/redhat', ['init/cfn-resource-bridge'])]
 
 try:

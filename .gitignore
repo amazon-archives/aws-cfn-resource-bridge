@@ -2,3 +2,4 @@
 *.pyc
 MANIFEST
 aws-cfn-resource-bridge-*.tar.gz
+dist/
