@@ -10,12 +10,12 @@ if sys.version_info[0] == 2 and sys.version_info[1] < 6:
         print >> sys.stderr, "Python 2.6+ is required"
         sys.exit(1)
 
-rpm_requires = ['python>=2.6', 'python-daemon', 'python-botocore>=0.17.0']
+rpm_requires = ['python >= 2.6', 'python-daemon', 'python-botocore >= 0.17.0']
 dependencies = ['python-daemon>=1.5.2', 'botocore>=0.17.0,<0.18.0']
 
 if sys.version_info[:2] == (2, 6):
     # For python2.6 we have to require argparse
-    rpm_requires.append('python-argparse>=1.1')
+    rpm_requires.append('python-argparse >= 1.1')
     dependencies.append('argparse>=1.1')
 
 _opts = {
