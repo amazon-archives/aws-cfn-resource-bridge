@@ -169,10 +169,12 @@ class CustomResource(object):
         if command_result.returncode:
             log.error(u"Command %s-%s (%s) failed", self._name, event.request_type, command)
             log.debug(u"Command %s output: %s", self._name, result_text)
+            log.debug(u"Command %s stderr: %s", self._name, command_result.stderr.strip())
             success = False
         else:
             log.info(u"Command %s-%s succeeded", self._name, event.request_type)
             log.debug(u"Command %s output: %s", self._name, result_text)
+            log.debug(u"Command %s stderr: %s", self._name, command_result.stderr.strip())
 
         event.send_result(success, result_attributes)
 

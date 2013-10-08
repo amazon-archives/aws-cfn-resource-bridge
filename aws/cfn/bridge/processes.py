@@ -45,7 +45,7 @@ class ProcessHelper(object):
     Helper to simplify command line execution
 
     """
-    def __init__(self, cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, env=None, cwd=None):
+    def __init__(self, cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=None, cwd=None):
         self._cmd = cmd
         self._stdout = stdout
         self._stderr = stderr
