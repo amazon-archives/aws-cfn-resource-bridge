@@ -218,10 +218,10 @@ class ResourceEvent():
         self._event = self._message.parse_message()
 
         # Ensure the event has some required fields.
-        if not self._event["StackId"]:
+        if not "StackId" in self._event:
             raise ValueError(u"ResourceEvent requires StackId")
 
-        if not self._event["ResponseURL"]:
+        if not "ResponseURL" in self._event:
             raise ValueError(u"ResourceEvent requires ResponseURL")
 
         request_type = self._event["RequestType"]
@@ -229,10 +229,10 @@ class ResourceEvent():
         if not request_type or request_type not in valid_types:
             raise ValueError(u"ResourceEvent requires RequestType to be %s", valid_types)
 
-        if not self._event["LogicalResourceId"]:
+        if not "LogicalResourceId" in self._event:
             raise ValueError(u"ResourceEvent requires LogicalResourceId")
 
-        if not self._event["RequestId"]:
+        if not "RequestId" in self._event:
             raise ValueError(u"ResourceEvent requires RequestId")
 
     @property
@@ -301,7 +301,7 @@ class ResourceEvent():
             self.__send(data)
             log.info(u"CloudFormation successfully sent response %s", data["Status"])
         except IOError, e:
-            log.error(u"Failed sending CloudFormation response: %s", str(e))
+            log.exception(u"Failed sending CloudFormation response")
 
     def __repr__(self):
         return str(self._event)
