@@ -77,7 +77,7 @@ def load_resources_from_configuration(config_dir):
     bridges_dir = os.path.join(config_dir, 'bridge.d')
     if os.path.isdir(bridges_dir):
         for hook_file in os.listdir(bridges_dir):
-            if os.path.isfile(os.path.join(bridges_dir, hook_file)):
+            if os.path.isfile(os.path.join(bridges_dir, hook_file)) and hook_file.endswith('.conf'):
                 bridge_files.append(os.path.join(bridges_dir, hook_file))
 
     # If we can't find any bridge files, error out.
