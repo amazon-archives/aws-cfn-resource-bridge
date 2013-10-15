@@ -247,7 +247,7 @@ class ResourceEvent():
             value = dict_in[key]
             new_key = prefix + key
             if isinstance(value, dict):
-                env = ResourceEvent._dict_to_env(value, new_key + ".", env)
+                env = ResourceEvent._dict_to_env(value, new_key + "_", env)
             else:
                 env[new_key] = str(value)
 
@@ -255,7 +255,7 @@ class ResourceEvent():
 
     def create_environment(self, flatten=True):
         if flatten:
-            return ResourceEvent._dict_to_env(self._event, "Event.", {})
+            return ResourceEvent._dict_to_env(self._event, "Event_", {})
         else:
             return {"EventProperties": json.dumps(self._event, skipkeys=True)}
 
