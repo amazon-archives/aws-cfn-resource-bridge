@@ -224,7 +224,7 @@ class ResourceEvent():
             raise ValueError(u"ResourceEvent requires ResponseURL")
 
         if not "RequestType" in self._event:
-            raise ValueError(u"RequestEvent requires RequestType")
+            raise ValueError(u"ResourceEvent requires RequestType")
 
         if not "ResourceType" in self._event:
             raise ValueError(u"ResourceEvent requires ResourceType")
