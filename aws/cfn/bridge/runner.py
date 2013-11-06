@@ -156,7 +156,7 @@ class QueuePollTask(BaseTask):
         tasks = []
         for event in events:
             service_token = event.get('ServiceToken')
-            resource_type = event.get('ResourceType')
+            resource_type = event.resource_type
 
             # Try to locate a handler for our event, starting with most specific lookup first
             resource = self._find_resource(self._queue_url, service_token, resource_type)

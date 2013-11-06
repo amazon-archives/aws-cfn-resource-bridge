@@ -223,6 +223,12 @@ class ResourceEvent():
         if not "ResponseURL" in self._event:
             raise ValueError(u"ResourceEvent requires ResponseURL")
 
+        if not "RequestType" in self._event:
+            raise ValueError(u"RequestEvent requires RequestType")
+
+        if not "ResourceType" in self._event:
+            raise ValueError(u"ResourceEvent requires ResourceType")
+
         request_type = self._event["RequestType"]
         valid_types = ["Create", "Delete", "Update"]
         if not request_type or request_type not in valid_types:
@@ -237,6 +243,10 @@ class ResourceEvent():
     @property
     def request_type(self):
         return self._event["RequestType"]
+
+    @property
+    def resource_type(self):
+        return self._event["ResourceType"]
 
     @staticmethod
     def _dict_to_env(dict_in, prefix, env):
