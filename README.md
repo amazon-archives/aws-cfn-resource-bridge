@@ -49,16 +49,16 @@ default_action=/home/ec2-user/lookup-eip.py
 
 The config file ```cfn-resource-bridge.conf``` can contain multiple sections and each section can contain the following options:
 
-```queue_url``` - the URL of the queue to pull messages from.
-```default_action``` - the default action to perform when a message is received.
-```create_action``` - the action to perform when a ```Create``` message is received.
-```delete_action``` - the action to perform when a ```Delete``` message is received.
-```update_action``` - the action to perform when a ```Update``` message is received.
-```timeout``` - the default timeout for messages taken from the queue.
-```create_timeout``` - the message timeout for create actions.
-```delete_timeout``` - the message timeout for delete actions.
-```update_timeout``` - the message timeout for update actions.
-```flatten``` - flatten resource properties in environment variables (true by default).
-```service_token``` - optional service token for the event.
-```resource_type``` - the custom resource type.
-```region``` - the AWS region - only required if it can't be determined from the queue URL.
+ - ```queue_url``` - the URL of the queue to pull messages from.
+ - ```default_action``` - the default action to perform when a message is received.
+ - ```create_action``` - the action to perform when a ```Create``` message is received.
+ - ```delete_action``` - the action to perform when a ```Delete``` message is received.
+ - ```update_action``` - the action to perform when a ```Update``` message is received.
+ - ```timeout``` - the default timeout for messages taken from the queue.
+ - ```create_timeout``` - the message timeout for create actions.
+ - ```delete_timeout``` - the message timeout for delete actions.
+ - ```update_timeout``` - the message timeout for update actions.
+ - ```flatten``` - flatten resource properties in environment variables (true by default).
+ - ```service_token``` - optional service token for the event.
+ - ```resource_type``` - the custom resource type.
+ - ```region``` - the AWS region - only required if it can't be determined from the queue URL.
