@@ -36,8 +36,8 @@ _OPTION_DELETE_ACTION = 'delete_action'
 _OPTION_UPDATE_ACTION = 'update_action'
 
 _OPTION_CREATE_TIMEOUT = 'create_timeout'
-_OPTION_DELETE_TIMEOUT = 'create_timeout'
-_OPTION_UPDATE_TIMEOUT = 'create_timeout'
+_OPTION_DELETE_TIMEOUT = 'delete_timeout'
+_OPTION_UPDATE_TIMEOUT = 'update_timeout'
 _OPTION_TIMEOUT = 'timeout'
 
 _OPTION_FLATTEN = 'flatten'
