@@ -62,3 +62,11 @@ The config file ```cfn-resource-bridge.conf``` can contain multiple sections and
  - ```service_token``` - optional service token for the event.
  - ```resource_type``` - the custom resource type.
  - ```region``` - the AWS region - only required if it can't be determined from the queue URL.
+ 
+Contributing
+-------------
+1. Fork it
+2. Create your feature branch (`git checkout -b my-new-feature`)
+3. Commit your changes (`git commit -am 'Add some feature'`)
+4. Push to the branch (`git push origin my-new-feature`)
+5. Create new Pull Request
