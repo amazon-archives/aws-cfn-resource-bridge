@@ -11,7 +11,7 @@ Clone the repo and run the ```setup.py``` file in the root:
 python setup.py install
 ```
 
-You can also use the file to build and RPM:
+You can also use the file to build an RPM:
 
 ```
 python setup.py bdist_rpm
