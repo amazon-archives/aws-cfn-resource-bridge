@@ -1,4 +1,21 @@
 #!/usr/bin/env python
+
+#==============================================================================
+# Copyright 2013 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#==============================================================================
+
 import sys
 
 from distutils.core import setup, Distribution
@@ -11,7 +28,7 @@ if sys.version_info[0] == 2 and sys.version_info[1] < 6:
         sys.exit(1)
 
 rpm_requires = ['python >= 2.6', 'python-daemon', 'python-botocore >= 0.17.0']
-dependencies = ['python-daemon>=1.5.2', 'botocore>=0.17.0,<0.18.0']
+dependencies = ['python-daemon>=1.5.2', 'botocore>=0.17.0']
 
 if sys.version_info[:2] == (2, 6):
     # For python2.6 we have to require argparse
@@ -23,7 +40,8 @@ _opts = {
     'bdist_rpm': {'requires': rpm_requires}
 }
 _data_files = [('share/doc/%s-%s' % (name, bridge.__version__), ['NOTICE.txt', 'LICENSE']),
-               ('init/redhat', ['init/cfn-resource-bridge'])]
+               ('init/redhat', ['init/redhat/cfn-resource-bridge']),
+               ('init/ubuntu', ['init/ubuntu/cfn-resource-bridge'])]
 
 try:
     import py2exe
@@ -39,7 +57,7 @@ try:
         'compressed': True,
         'com_server': [],
         'ctypes_com_server': [],
-        'service': ["cfnresourcebridge.winbridge"],
+        'service': ["aws.cfn.bridge.winbridge"],
         'isapi': [],
         'windows': [],
         'zipfile': 'library.zip',
@@ -59,7 +77,11 @@ setup_options = dict(
     license='Apache License 2.0',
     scripts=['bin/cfn-resource-bridge'],
     classifiers=[],
-    packages=['aws', 'aws.cfn', 'aws.cfn.bridge'],
+    packages=[
+        'aws',
+        'aws.cfn',
+        'aws.cfn.bridge'
+    ],
     install_requires=dependencies,
     data_files=_data_files,
     options=_opts

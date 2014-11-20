@@ -1,5 +1,6 @@
 include LICENSE
 include NOTICE.txt
 include MANIFEST.in
-include init/cfn-resource-bridge
+include init/redhat/cfn-resource-bridge
+include init/ubuntu/cfn-resource-bridge
 include README.md

@@ -47,14 +47,14 @@ def exponential_backoff(max_tries, max_sleep=20):
     """
     Returns a series of floating point numbers between 0 and min(max_sleep, 2^i-1) for i in 0 to max_tries
     """
-    return [random.random() * min(max_sleep, (2**i - 1)) for i in range(0, max_tries)]
+    return [random.random() * min(max_sleep, (2 ** i - 1)) for i in range(0, max_tries)]
 
 
 def extend_backoff(durations, max_sleep=20):
     """
     Adds another exponential delay time to a list of delay times
     """
-    durations.append(random.random() * min(max_sleep, (2**len(durations) - 1)))
+    durations.append(random.random() * min(max_sleep, (2 ** len(durations) - 1)))
 
 
 def retry_on_failure(max_tries=5, http_error_extractor=_extract_http_error):

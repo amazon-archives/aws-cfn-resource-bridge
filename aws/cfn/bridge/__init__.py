@@ -14,7 +14,7 @@
 # limitations under the License.
 #==============================================================================
 __author__ = 'aws'
-__version__ = '0.1'
+__version__ = '0.2'
 
 import logging.config
 import os.path
