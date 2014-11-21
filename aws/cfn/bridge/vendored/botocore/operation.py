@@ -13,14 +13,14 @@
 # language governing permissions and limitations under the License.
 
 import logging
-from botocore.exceptions import MissingParametersError
-from botocore.exceptions import UnknownParameterError
-from botocore.paginate import DeprecatedPaginator
-from botocore import serialize
-from botocore import BotoCoreObject, xform_name
+from .exceptions import MissingParametersError
+from .exceptions import UnknownParameterError
+from .paginate import DeprecatedPaginator
+from . import serialize
+from . import BotoCoreObject, xform_name
 
-from botocore.validate import ParamValidator
-from botocore.exceptions import ParamValidationError
+from .validate import ParamValidator
+from .exceptions import ParamValidationError
 
 
 logger = logging.getLogger(__name__)

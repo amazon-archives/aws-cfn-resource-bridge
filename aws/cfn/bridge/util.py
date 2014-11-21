@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #==============================================================================
-from requests.exceptions import ConnectionError, HTTPError, Timeout, SSLError
+from .vendored.botocore.vendored.requests.exceptions import ConnectionError, HTTPError, Timeout, SSLError
 import logging
 import random
 import time

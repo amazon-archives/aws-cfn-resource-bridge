@@ -17,18 +17,18 @@ import logging
 import time
 import threading
 
-from botocore.vendored.requests.sessions import Session
-from botocore.vendored.requests.utils import get_environ_proxies
+from .vendored.requests.sessions import Session
+from .vendored.requests.utils import get_environ_proxies
 import six
 
-import botocore.response
-import botocore.exceptions
-from botocore.auth import AUTH_TYPE_MAPS
-from botocore.exceptions import UnknownSignatureVersionError, UnknownEndpointError
-from botocore.awsrequest import AWSRequest
-from botocore.compat import urljoin, json, quote
-from botocore.utils import percent_encode_sequence
-from botocore.hooks import first_non_none_response
+from . import response as bc_response
+from . import exceptions as bc_exceptions
+from .auth import AUTH_TYPE_MAPS
+from .exceptions import UnknownSignatureVersionError, UnknownEndpointError
+from .awsrequest import AWSRequest
+from .compat import urljoin, json, quote
+from .utils import percent_encode_sequence
+from .hooks import first_non_none_response
 
 
 logger = logging.getLogger(__name__)
@@ -158,7 +158,7 @@ class Endpoint(object):
                          exc_info=True)
             return (None, e)
         # This returns the http_response and the parsed_data.
-        return (botocore.response.get_response(operation_model,
+        return (bc_response.get_response(operation_model,
                                                http_response), None)
 
     def _needs_retry(self, attempts, operation_model, response=None,
@@ -244,7 +244,7 @@ def _get_auth(signature_version, credentials, service_name, region_name):
         kwargs = {'credentials': credentials}
         if cls.REQUIRES_REGION:
             if region_name is None:
-                raise botocore.exceptions.NoRegionError(
+                raise bc_exceptions.NoRegionError(
                     env_var='AWS_DEFAULT_REGION')
             kwargs['region_name'] = region_name
             kwargs['service_name'] = service_name

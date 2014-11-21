@@ -18,7 +18,7 @@
 
 import sys
 
-from distutils.core import setup, Distribution
+from distutils.core import setup
 from aws.cfn import bridge
 
 name = 'aws-cfn-resource-bridge'
@@ -27,13 +27,21 @@ if sys.version_info[0] == 2 and sys.version_info[1] < 6:
         print >> sys.stderr, "Python 2.6+ is required"
         sys.exit(1)
 
-rpm_requires = ['python >= 2.6', 'python-daemon', 'python-botocore >= 0.17.0']
-dependencies = ['python-daemon>=1.5.2', 'botocore>=0.17.0']
+rpm_requires = ['python >= 2.6', 'python-daemon', 'python-six >= 1.1.0', 'python-jmespath >= 0.5.0',
+                'python-dateutil >= 2.1']
+dependencies = ['python-daemon>=1.5.2', 'six>=1.1.0', 'jmespath>=0.5.0', 'python-dateutil>=2.1']
 
 if sys.version_info[:2] == (2, 6):
     # For python2.6 we have to require argparse
     rpm_requires.append('python-argparse >= 1.1')
     dependencies.append('argparse>=1.1')
+
+    ### Required for botocore. ###
+    rpm_requires.append('python-ordereddict >= 1.1')
+    dependencies.append('ordereddict>=1.1')
+    rpm_requires.append('python-simplejson >= 3.3.0')
+    dependencies.append('simplejson>=3.3.0')
+    ### End botocore dependencies ###
 
 _opts = {
     'build_scripts': {'executable': '/usr/bin/env python'},
@@ -42,6 +50,10 @@ _opts = {
 _data_files = [('share/doc/%s-%s' % (name, bridge.__version__), ['NOTICE.txt', 'LICENSE']),
                ('init/redhat', ['init/redhat/cfn-resource-bridge']),
                ('init/ubuntu', ['init/ubuntu/cfn-resource-bridge'])]
+_package_data = {
+    'aws.cfn.bridge.vendored.botocore': ['data/*.json', 'data/aws/*.json', 'data/aws/*/*.json'],
+    'aws.cfn.bridge.vendored.botocore.vendored.requests': ['*.pem']
+}
 
 try:
     import py2exe
@@ -63,7 +75,7 @@ try:
         'zipfile': 'library.zip',
         'console': ['bin/cfn-resource-bridge']
     }
-    _data_files = [('', ['license/win/NOTICE.txt', 'license/win/LICENSE.rtf'])]
+    _data_files = [('', ['license/win/NOTICE.txt', 'license/win/LICENSE.rtf', 'aws/cfn/bridge/vendored/botocore/vendored/requests/cacert.pem'])]
 except ImportError:
     pass
 
@@ -80,10 +92,21 @@ setup_options = dict(
     packages=[
         'aws',
         'aws.cfn',
-        'aws.cfn.bridge'
+        'aws.cfn.bridge',
+        'aws.cfn.bridge.vendored',
+        'aws.cfn.bridge.vendored.botocore',
+        'aws.cfn.bridge.vendored.botocore.vendored',
+        'aws.cfn.bridge.vendored.botocore.vendored.requests',
+        'aws.cfn.bridge.vendored.botocore.vendored.requests.packages',
+        'aws.cfn.bridge.vendored.botocore.vendored.requests.packages.charade',
+        'aws.cfn.bridge.vendored.botocore.vendored.requests.packages.urllib3',
+        'aws.cfn.bridge.vendored.botocore.vendored.requests.packages.urllib3.contrib',
+        'aws.cfn.bridge.vendored.botocore.vendored.requests.packages.urllib3.packages',
+        'aws.cfn.bridge.vendored.botocore.vendored.requests.packages.urllib3.packages.ssl_match_hostname',
     ],
     install_requires=dependencies,
     data_files=_data_files,
+    package_data=_package_data,
     options=_opts
 )
 

@@ -17,10 +17,10 @@ from six import string_types, text_type
 import dateutil.parser
 from dateutil.tz import tzlocal
 
-from botocore.exceptions import InvalidExpressionError, ConfigNotFound
-from botocore.compat import json, quote
-from botocore.vendored import requests
-from botocore.compat import OrderedDict
+from .exceptions import InvalidExpressionError, ConfigNotFound
+from .compat import json, quote
+from .vendored import requests
+from .compat import OrderedDict
 
 
 logger = logging.getLogger(__name__)

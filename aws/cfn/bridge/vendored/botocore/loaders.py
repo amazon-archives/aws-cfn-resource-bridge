@@ -1,11 +1,11 @@
 import glob
 import os
 
-from botocore import BOTOCORE_ROOT
-from botocore.compat import json
-from botocore.compat import OrderedDict
-from botocore.exceptions import ApiVersionNotFoundError
-from botocore.exceptions import DataNotFoundError
+from . import BOTOCORE_ROOT
+from .compat import json
+from .compat import OrderedDict
+from .exceptions import ApiVersionNotFoundError
+from .exceptions import DataNotFoundError
 
 
 def cachable(func):

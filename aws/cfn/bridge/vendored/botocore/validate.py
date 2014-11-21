@@ -17,8 +17,8 @@ import six
 import decimal
 from datetime import datetime
 
-from botocore.utils import parse_timestamp
-from botocore.exceptions import ParamValidationError
+from .utils import parse_timestamp
+from .exceptions import ParamValidationError
 
 
 def validate_parameters(params, shape):

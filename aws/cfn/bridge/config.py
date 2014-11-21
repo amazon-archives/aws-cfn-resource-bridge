@@ -17,7 +17,7 @@ import os
 import ConfigParser
 import logging
 
-from aws.cfn.bridge.resources import CustomResource
+from .resources import CustomResource
 
 # Construct a logger to write messages about bridges
 log = logging.getLogger("cfn.resourcebridge")

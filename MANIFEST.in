@@ -4,3 +4,5 @@ include MANIFEST.in
 include init/redhat/cfn-resource-bridge
 include init/ubuntu/cfn-resource-bridge
 include README.md
+include aws/cfn/bridge/vendored/botocore/vendored/requests/cacert.pem
+recursive-include aws/cfn/bridge/vendored/botocore/data *.json

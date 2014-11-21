@@ -14,9 +14,9 @@
 # limitations under the License.
 #==============================================================================
 import re
-from aws.cfn.bridge.processes import ProcessHelper
-from aws.cfn.bridge import util
-import botocore.session
+from .processes import ProcessHelper
+from . import util
+from .vendored.botocore import session as bc_session
 
 try:
     import simplejson as json
@@ -24,7 +24,7 @@ except ImportError:
     import json
 
 import logging
-import requests
+from .vendored.botocore.vendored import requests
 import uuid
 
 log = logging.getLogger("cfn.resourcebridge")
@@ -189,7 +189,7 @@ class Message(object):
         return json.loads(json.loads(self._message["Body"])["Message"])
 
     def delete(self):
-        sqs = botocore.session.get_session().get_service("sqs")
+        sqs = bc_session.get_session().get_service("sqs")
         delete = sqs.get_operation("DeleteMessage")
         http_response, response_data = delete.call(sqs.get_endpoint(self._region),
                                                    queue_url=self._queue_url,
@@ -201,7 +201,7 @@ class Message(object):
                       (self._queue_url, http_response.status_code, response_data))
 
     def change_message_visibility(self, timeout):
-        sqs = botocore.session.get_session().get_service("sqs")
+        sqs = bc_session.get_session().get_service("sqs")
         delete = sqs.get_operation("ChangeMessageVisibility")
         http_response, response_data = delete.call(sqs.get_endpoint(self._region),
                                                    queue_url=self._queue_url,

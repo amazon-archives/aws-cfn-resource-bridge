@@ -10,17 +10,17 @@
 # distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF
 # ANY KIND, either express or implied. See the License for the specific
 # language governing permissions and limitations under the License.
-from botocore.model import ServiceModel
-from botocore.exceptions import DataNotFoundError
-from botocore.exceptions import OperationNotPageableError
-from botocore.exceptions import ClientError
-from botocore import waiter
-from botocore import xform_name
-from botocore.paginate import Paginator
-from botocore.utils import CachedProperty
-import botocore.validate
-import botocore.serialize
-from botocore import credentials
+from .model import ServiceModel
+from .exceptions import DataNotFoundError
+from .exceptions import OperationNotPageableError
+from .exceptions import ClientError
+from . import waiter
+from . import xform_name
+from .paginate import Paginator
+from .utils import CachedProperty
+from . import parsers as bc_parsers
+from . import serialize as bc_serialize
+from . import credentials
 
 
 class ClientCreator(object):
@@ -174,7 +174,7 @@ class ClientCreator(object):
         # * endpoint
         # * response parser
         protocol = service_model.metadata['protocol']
-        serializer = botocore.serialize.create_serializer(
+        serializer = bc_serialize.create_serializer(
             protocol, include_validation=True)
         creds = None
         if aws_secret_access_key is not None:
@@ -186,7 +186,7 @@ class ClientCreator(object):
             service_model, region_name, is_secure=is_secure,
             endpoint_url=endpoint_url, verify=verify,
             credentials=creds)
-        response_parser = botocore.parsers.create_parser(protocol)
+        response_parser = bc_parsers.create_parser(protocol)
         return {
             'serializer': serializer,
             'endpoint': endpoint,

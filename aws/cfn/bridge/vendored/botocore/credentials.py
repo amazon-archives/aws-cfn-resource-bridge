@@ -21,12 +21,12 @@ from six.moves import configparser
 from dateutil.parser import parse
 from dateutil.tz import tzlocal
 
-import botocore.config
-from botocore.compat import total_seconds
-from botocore.exceptions import UnknownCredentialError
-from botocore.exceptions import PartialCredentialsError
-from botocore.exceptions import ConfigNotFound
-from botocore.utils import InstanceMetadataFetcher, parse_key_val_file
+from . import config as bc_config
+from .compat import total_seconds
+from .exceptions import UnknownCredentialError
+from .exceptions import PartialCredentialsError
+from .exceptions import ConfigNotFound
+from .utils import InstanceMetadataFetcher, parse_key_val_file
 
 
 logger = logging.getLogger(__name__)
@@ -378,7 +378,7 @@ class SharedCredentialProvider(CredentialProvider):
             profile_name = 'default'
         self._profile_name = profile_name
         if ini_parser is None:
-            ini_parser = botocore.config.raw_config_parse
+            ini_parser = bc_config.raw_config_parse
         self._ini_parser = ini_parser
 
     def load(self):
@@ -426,7 +426,7 @@ class ConfigProvider(CredentialProvider):
         self._config_filename = config_filename
         self._profile_name = profile_name
         if config_parser is None:
-            config_parser = botocore.config.load_config
+            config_parser = bc_config.load_config
         self._config_parser = config_parser
 
     def load(self):
@@ -469,7 +469,7 @@ class BotoProvider(CredentialProvider):
         if environ is None:
             environ = os.environ
         if ini_parser is None:
-            ini_parser = botocore.config.raw_config_parse
+            ini_parser = bc_config.raw_config_parse
         self._environ = environ
         self._ini_parser = ini_parser
 
