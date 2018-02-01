@@ -1,3 +1,10 @@
+Archived
+========
+
+This project has been archived. Please use CloudFormation’s native support for Custom Resources as documented at https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/template-custom-resources.html.
+
+---
+
 aws-cfn-resource-bridge
 =======================
 
